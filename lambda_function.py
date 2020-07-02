@@ -7,6 +7,7 @@ import boto3
 from botocore.exceptions import ClientError
 import json
 from config import config
+from generate_html import generate_html
 
 class Item:
     def __init__(self, url: str):
@@ -113,8 +114,11 @@ class SubItem:
             "in_stock": self.in_stock
         }
 
-def send_email(json):
+def send_email(json_str):
     client = boto3.client('ses', region_name='us-east-1')
+    html = generate_html(json.loads(json_str))
+    with open("output.html","w",encoding="utf-8") as f:
+        f.write(html)
     try:
         response = client.send_email(
             Destination={
@@ -124,11 +128,11 @@ def send_email(json):
                 "Body": {
                     "Html": {
                         "Charset": "UTF-8",
-                        "Data": "<html><body>TEST_EMAIL</body></html>",
+                        "Data": html,
                     },
                     "Text": {
                         "Charset": "UTF-8",
-                        "Data": "TEST_EMAIL_TEXT",
+                        "Data": html,
                     },
                 },
                 "Subject": {
@@ -145,12 +149,11 @@ def send_email(json):
 
 # AWS Lambda
 def lambda_handler(event, context):
+    to_scrape = requests.get("https://raw.githubusercontent.com/jdglaser/rep-scrape/master/to_scrape.txt").text.split("\n")
     output = []
     for i in to_scrape:
         output.append(Item(i).to_json())
-    return output
-
-    '''response = send_email(json.dumps(output))
+    response = send_email(json.dumps(output))
     if response[0] == 0: 
         return {
             'statusCode': 200,
@@ -160,4 +163,4 @@ def lambda_handler(event, context):
         return {
             'statusCode': 201,
             'body': response[1]
-        }'''
+        }
