@@ -127,15 +127,11 @@ def send_email(json_str):
                     "Html": {
                         "Charset": "UTF-8",
                         "Data": html,
-                    },
-                    "Text": {
-                        "Charset": "UTF-8",
-                        "Data": html,
-                    },
+                    }
                 },
                 "Subject": {
                     "Charset": "UTF-8",
-                    "Data": "Auto Rep Fitness In-Stock Update"
+                    "Data": "Auto Rep Fitness In-Stock Update New"
                 }
             },
             Source=config.sender_email
