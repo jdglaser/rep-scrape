@@ -117,8 +117,6 @@ class SubItem:
 def send_email(json_str):
     client = boto3.client('ses', region_name='us-east-1')
     html = generate_html(json.loads(json_str))
-    with open("output.html","w",encoding="utf-8") as f:
-        f.write(html)
     try:
         response = client.send_email(
             Destination={
