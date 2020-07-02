@@ -1,0 +1,1 @@
+aws lambda --function-name invoke arn:aws:lambda:us-east-1:618556235307:function:RepScrape output.json
