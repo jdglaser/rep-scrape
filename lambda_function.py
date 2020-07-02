@@ -6,8 +6,7 @@ import requests
 import boto3
 from botocore.exceptions import ClientError
 import json
-
-from to_scrape import to_scrape
+from config import config
 
 class Item:
     def __init__(self, url: str):
@@ -85,7 +84,11 @@ class Item:
                 continue
             name = tds[0].text.replace("\n","").strip()
             in_stock = False if tds[-1].text.replace("\n","").strip() else True
+            if self.in_stock is None and in_stock == True:
+                self.in_stock = True
             self.sub_items.append(SubItem(name, in_stock))
+        if self.in_stock is None:
+            self.in_stock = False
 
     def to_json(self):
         return {
@@ -115,9 +118,7 @@ def send_email(json):
     try:
         response = client.send_email(
             Destination={
-                "ToAddresses": [
-                    "jarred.glaser@gmail.com",
-                ],
+                "ToAddresses": config.reciever_emails,
             },
             Message={
                 "Body": {
@@ -135,7 +136,7 @@ def send_email(json):
                     "Data": "Auto Rep Fitness In-Stock Update"
                 }
             },
-            Source="ses.alerts.jg@gmail.com"
+            Source=config.sender_email
         )
     except ClientError as e:
         return (1, e.__traceback__)
@@ -147,8 +148,9 @@ def lambda_handler(event, context):
     output = []
     for i in to_scrape:
         output.append(Item(i).to_json())
+    return output
 
-    response = send_email(json.dumps(output))
+    '''response = send_email(json.dumps(output))
     if response[0] == 0: 
         return {
             'statusCode': 200,
@@ -158,4 +160,4 @@ def lambda_handler(event, context):
         return {
             'statusCode': 201,
             'body': response[1]
-        }
+        }'''
