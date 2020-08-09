@@ -58,10 +58,14 @@ def lambda_handler(event, context):
 
     # Send response
     response = send_email(json.dumps(output))
+
+    output_str = '\n'.join([i["url"] for i in output])
+    body = f"email sent successfully. checked following urls: {output_str}"
+
     if response[0] == 0: 
         return {
             'statusCode': 200,
-            'body': "email sent successfully"
+            'body': body
         }
     else:
         return {

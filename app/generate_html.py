@@ -22,8 +22,11 @@ sub_item_row_template = """
 def generate_html(json):
     with open("template.html","r") as f:
         template = f.read()
+    
+    checked_urls = []
     final_str = ""
     for j in json:
+        checked_urls.append(j["url"])
         if j["in_stock"] == False:
             continue
         if j["sub_items"]:
@@ -35,7 +38,9 @@ def generate_html(json):
         elif not j["sub_items"]:
             row = single_item_row_template.format(img=j["img"], url=j["url"], name=j["name"])
             final_str += row
+    
+    checked_urls_str = "".join([f"<li>{url}</li>" for url in checked_urls])
     if final_str == "":
-        return template.replace("{rows}","<h2>No In Stock Items \U0001f614</h2>")
+        return template.replace("{rows}", "<h2>No In Stock Items \U0001f614</h2>").replace("{checked_urls}", checked_urls_str)
     else:
-        return template.replace("{rows}",final_str)
+        return template.replace("{rows}", final_str).replace("{checked_urls}", checked_urls_str)
