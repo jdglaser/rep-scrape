@@ -10,6 +10,7 @@ from app.config import config
 from app.generate_html import generate_html
 from app.Item import Item
 from app.RepScraper import scrape_rep
+from app.TitanScraper import scrape_titan
 from botocore.exceptions import ClientError
 
 
@@ -42,12 +43,20 @@ def send_email(json_str):
 
 # AWS Lambda
 def lambda_handler(event, context):
-    to_scrape = requests.get("https://raw.githubusercontent.com/jdglaser/rep-scrape/master/to_scrape.txt").text.split("\n")
+    to_scrape = json.loads(requests.get("https://raw.githubusercontent.com/jdglaser/rep-scrape/master/to_scrape.json").text)
     output = []
-    for i in to_scrape:
+
+    # Scrape rep
+    for i in to_scrape["rep"]:
         item = scrape_rep(i)
         output.append(item.to_json())
 
+    # Scrape titan
+    for i in to_scrape["titan"]:
+        item = scrape_titan(i)
+        output.append(item.to_json())
+
+    # Send response
     response = send_email(json.dumps(output))
     if response[0] == 0: 
         return {
