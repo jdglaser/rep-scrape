@@ -47,6 +47,7 @@ def lambda_handler(event, context):
     for i in to_scrape:
         item = scrape_rep(i)
         output.append(item.to_json())
+
     response = send_email(json.dumps(output))
     if response[0] == 0: 
         return {
