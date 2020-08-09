@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "email sent successfully"}
+{"errorMessage": "Unable to import module 'lambda_function': attempted relative import with no known parent package", "errorType": "Runtime.ImportModuleError"}

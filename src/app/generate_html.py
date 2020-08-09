@@ -20,7 +20,7 @@ sub_item_row_template = """
 """
 
 def generate_html(json):
-    with open("template.html","r") as f:
+    with open("./app/template.html","r") as f:
         template = f.read()
     
     checked_urls = []

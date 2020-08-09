@@ -1,5 +1,4 @@
 from lambda_function import lambda_handler
-from app import TitanScraper
 
 
 if __name__ == "__main__":
